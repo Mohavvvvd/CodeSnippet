@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronLeft, ChevronRight, Star, Plus, RefreshCw, Sparkles } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, Star, Plus, RefreshCw, Sparkles, ArrowUp } from 'lucide-react';
 
 // Hooks
 import { useDarkMode } from './hooks/useDarkMode';
@@ -17,6 +17,8 @@ import WelcomeScreen from './components/UI/WelcomeScreen';
 import { NotificationContainer } from './components/Layout/Notification';
 import LoadingSpinner from './components/UI/LoadingSpinner';
 import About from './components/UI/About';
+import TermsModal from './components/Auth/TermsModal';
+import PrivacyModal from './components/Auth/PrivacyModal';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/snippets';
 
@@ -35,7 +37,7 @@ function App() {
   
   const [sidebarOpen, setSidebarOpen] = useState(false); 
   const [showAuth, setShowAuth] = useState(false);
-  const [isLogin, setIsLogin] = useState(true); // Added missing state
+  const [isLogin, setIsLogin] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState(null);
   
@@ -45,6 +47,9 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showTopButton, setShowTopButton] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   
   // Notifications
   const [notifications, setNotifications] = useState([]);
@@ -56,7 +61,7 @@ function App() {
     code: '',
     language: 'javascript',
     tags: [],
-    by:username,
+    by: username,
     isPublic: false
   });
 
@@ -78,6 +83,27 @@ function App() {
     toggleFavorite,
     setError
   } = useSnippets(user);
+
+  // Calculate favorites count from snippets
+  const favoritesCount = snippets.filter(snippet => snippet.isFavorited).length;
+
+  // Surveille le scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowTopButton(true);
+      } else {
+        setShowTopButton(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Auto-open sidebar on desktop, close on mobile
   useEffect(() => {
@@ -219,7 +245,7 @@ function App() {
         : API_BASE;
       
       const method = editingSnippet ? 'PUT' : 'POST';
-      
+      console.log('Submitting to URL:', url, 'with method:', method, 'token', token);
       const response = await fetch(url, {
         method,
         headers: { 
@@ -286,7 +312,7 @@ function App() {
       code: '',
       language: 'javascript',
       tags: [],
-       by: username || '',
+      by: username || '',
       isPublic: false
     });
     setEditingSnippet(null);
@@ -377,7 +403,7 @@ function App() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 transition-colors duration-200 flex flex-col overflow-hidden"
+      className="h-screen w-full bg-gray-50 dark:bg-gray-900 transition-colors duration-200 flex flex-col overflow-hidden"
     >
       {/* Notifications */}
       <NotificationContainer 
@@ -386,7 +412,7 @@ function App() {
       />
 
       {/* Header - Fixed at top */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 z-30">
         <Header
           user={user}
           username={username}
@@ -420,14 +446,33 @@ function App() {
       />
 
       {/* About Modal */}
-      <AnimatePresence>
-        {showAbout && (
-          <About onClose={() => setShowAbout(false)} />
-        )}
-      </AnimatePresence>
+      <About
+        isOpen={showAbout}
+        onClose={() => setShowAbout(false)}
+        onOpenTerms={() => {
+          setShowAbout(false);
+          setTimeout(() => setShowTerms(true), 300);
+        }}
+        onOpenPrivacy={() => {
+          setShowAbout(false);
+          setTimeout(() => setShowPrivacy(true), 300);
+        }}
+      />
+
+      {/* Terms Modal */}
+      <TermsModal 
+        isOpen={showTerms} 
+        onClose={() => setShowTerms(false)} 
+      />
+
+      {/* Privacy Modal */}
+      <PrivacyModal 
+        isOpen={showPrivacy} 
+        onClose={() => setShowPrivacy(false)} 
+      />
 
       {!user ? (
-        <div className="flex-1">
+        <div className="flex-1 overflow-x-hidden ">
           <WelcomeScreen
             onLogin={() => {
               setShowAuth(true);
@@ -441,10 +486,10 @@ function App() {
           />
         </div>
       ) : (
-        <div className="flex-1 flex relative min-h-0">
+        <div className="flex-1 flex relative overflow-hidden">
           {/* Mobile Sidebar Backdrop */}
           <AnimatePresence>
-            {sidebarOpen && window.innerWidth < 1024 && (
+            {sidebarOpen && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -455,7 +500,7 @@ function App() {
             )}
           </AnimatePresence>
 
-          {/* Sidebar */}
+          {/* Sidebar - Fixed */}
           <div className={`flex-shrink-0 ${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
             <Sidebar
               isOpen={sidebarOpen}
@@ -473,15 +518,200 @@ function App() {
             />
           </div>
 
-          {/* Main Content - Scrollable area */}
-          <main className={`flex-1 min-h-0 overflow-auto transition-all duration-300 ${
-            sidebarOpen && window.innerWidth >= 1024 ? 'lg:ml-0' : 'ml-0'
-          }`}>
+          {/* Main Content - Scrollable ONLY */}
+          <main className="flex-1 overflow-y-auto">
+            {/* Hero Section with Glassmorphism */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="relative px-4 sm:px-6 py-8 sm:py-12 overflow-hidden"
+            >
+              {/* Animated Background Gradient */}
+              <motion.div
+                animate={{
+                  background: [
+                    "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%)",
+                    "radial-gradient(circle at 80% 50%, rgba(147, 51, 234, 0.15) 0%, transparent 50%)",
+                    "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%)",
+                  ],
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 -z-10"
+              />
+              
+              {/* Floating Orbs */}
+              <motion.div
+                animate={{
+                  x: [0, 100, 0],
+                  y: [0, -50, 0],
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-10 right-20 w-32 h-32 bg-blue-400 dark:bg-blue-600 rounded-full blur-3xl -z-10"
+              />
+              <motion.div
+                animate={{
+                  x: [0, -80, 0],
+                  y: [0, 60, 0],
+                  scale: [1, 1.3, 1],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute bottom-10 left-20 w-40 h-40 bg-purple-400 dark:bg-purple-600 rounded-full blur-3xl -z-10"
+              />
+
+              <div className="max-w-7xl mx-auto">
+                <div className="flex items-center justify-between flex-wrap gap-6">
+                  {/* Left Side - Greeting */}
+                  <motion.div 
+                    className="flex-1 min-w-[280px]"
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                  >
+                    {/* Greeting with Wave Animation */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <motion.h2 
+                        className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      >
+                        Hello, {username || 'Developer'}!
+                      </motion.h2>
+                      <motion.span
+                        animate={{ 
+                          rotate: [0, 14, -8, 14, -4, 10, 0],
+                          scale: [1, 1.2, 1, 1.2, 1, 1.2, 1]
+                        }}
+                        transition={{ 
+                          duration: 2.5,
+                          repeat: Infinity,
+                          repeatDelay: 3,
+                          ease: "easeInOut"
+                        }}
+                        className="text-3xl sm:text-4xl origin-bottom-right"
+                      >
+                        👋
+                      </motion.span>
+                    </div>
+
+                    {/* Description */}
+                    <div className="mb-4">
+                      <motion.p 
+                        className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                      >
+                        Your personal code vault — clean, focused, and built exclusively for code snippets.
+                      </motion.p>
+                      <motion.p 
+                        className="text-base sm:text-lg text-gray-600 dark:text-gray-400"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6, duration: 0.5 }}
+                      >
+                        Unlike Studrz, which tries to do everything and ends up haunted by chaos 👻, this platform was crafted by the Spooky One for serious developers.
+                      </motion.p>
+                    </div>
+
+                    {/* Stats Section */}
+                    <motion.div 
+                      className="flex items-center gap-4 sm:gap-6"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7, duration: 0.5 }}
+                    >
+                      <motion.div 
+                        className="flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Sparkles size={16} className="text-yellow-500" />
+                        </motion.div>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          {snippets.length} Snippets
+                        </span>
+                      </motion.div>
+                      
+                      <motion.div 
+                        className="flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        <motion.div
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Star size={16} className="text-blue-500 fill-blue-500" />
+                        </motion.div>
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          {favoritesCount} Favorites
+                        </span>
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Right Side - Action Buttons */}
+                  <motion.div 
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                  >
+                    {/* Explore Button */}
+                    <motion.button
+                      whileHover={{ 
+                        scale: 1.05,
+                        boxShadow: "0 20px 40px -10px rgba(59, 130, 246, 0.4)"
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        clearFilters();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="group relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-xl overflow-hidden"
+                    >
+                      {/* Button Shine Effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        animate={{
+                          x: ["-100%", "100%"]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          repeatDelay: 2,
+                          ease: "linear"
+                        }}
+                      />
+                      
+                      <motion.div
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Star size={20} className="fill-white" />
+                      </motion.div>
+                      <span className="relative z-10">Explore Collection</span>
+                    </motion.button>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Scrollable Content */}
             <div className="p-4 sm:p-6">
               {/* Snippet Grid */}
               <SnippetGrid
                 snippets={snippets}
-                user = {user}
+                user={user}
                 isLoading={isLoading}
                 onEdit={handleEditSnippet}
                 onDelete={handleDeleteSnippet}
@@ -496,47 +726,12 @@ function App() {
                 showFavoritesOnly={showFavoritesOnly}
               />
 
-              {/* New Refresh Button after snippet cards */}
-              {snippets.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex justify-center mt-8 mb-6"
-                >
-                  <motion.button
-                    whileHover={{ 
-                      scale: 1.05,
-                      boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)"
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleRefreshSnippets}
-                    disabled={isRefreshing}
-                    className="flex items-center gap-3 px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg"
-                  >
-                    <motion.div
-                      animate={{ rotate: isRefreshing ? 360 : 0 }}
-                      transition={{ 
-                        rotate: { 
-                          duration: 1, 
-                          repeat: isRefreshing ? Infinity : 0,
-                          ease: "linear"
-                        }
-                      }}
-                    >
-                      <RefreshCw size={20} />
-                    </motion.div>
-                    {isRefreshing ? 'Refreshing...' : 'Refresh Snippets'}
-                  </motion.button>
-                </motion.div>
-              )}
-
               {/* Pagination */}
               {totalPages > 1 && (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-center gap-2 sm:gap-4 mt-6"
+                  className="flex items-center justify-center gap-2 sm:gap-4 mt-8 mb-6"
                 >
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -568,7 +763,7 @@ function App() {
         </div>
       )}
 
-      {/* Floating Action Button (FAB) */}
+      {/* Floating Action Button (FAB) for New Snippet */}
       {user && (
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
@@ -636,16 +831,59 @@ function App() {
         </motion.button>
       )}
 
-      {/* Snippet Editor */}
-      <SnippetEditor
-        isOpen={showEditor}
-        onClose={closeEditor}
-        onSubmit={saveSnippet}
-        formData={formData}
-        onChange={handleFormChange}
-        allTags={allTags}
-        editingSnippet={editingSnippet}
-      />
+      {/* Scroll to Top Button */}
+      {showTopButton && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{
+            scale: 1,
+            opacity: 1,
+          }}
+          whileHover={{
+            scale: 1.1,
+            boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)"
+          }}
+          whileTap={{ scale: 0.9 }}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 17,
+          }}
+          onClick={scrollToTop}
+          className="fixed bottom-24 right-6 w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-700 z-50"
+        >
+          <ArrowUp size={24} />
+
+          {/* Animated sparkle effect */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.8, 0, 0.8]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              repeatDelay: 2
+            }}
+            className="absolute inset-0 rounded-full bg-white opacity-20"
+          />
+        </motion.button>
+      )}
+
+      {/* Snippet Editor Modal */}
+      <AnimatePresence>
+        {showEditor && (
+          <SnippetEditor
+            isOpen={showEditor}
+            onClose={closeEditor}
+            formData={formData}
+            onFormChange={handleFormChange}
+            onSave={saveSnippet}
+            isEditing={!!editingSnippet}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

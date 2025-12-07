@@ -140,7 +140,7 @@ const PrivacyModal = ({ isOpen, onClose }) => {
                     Contact Us
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    If you have any questions about this Privacy Policy or your personal data, please contact us at privacy@yourapp.com
+                    If you have any questions about this Privacy Policy or your personal data, please contact us at mohavvvvd.2021@gmail.com
                   </p>
                 </div>
               </div>
