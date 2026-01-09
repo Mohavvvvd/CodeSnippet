@@ -1,0 +1,169 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2026 Mohamed Ghoul. All Rights Reserved.
+
+==============================================================================
+IMPORTANT: READ CAREFULLY BEFORE VIEWING, USING, OR ACCESSING THIS SOFTWARE
+==============================================================================
+
+This software and associated documentation files (the "Software") are the 
+exclusive property of Mohamed Ghoul ("Author"). By accessing this repository, 
+you agree to be bound by the terms of this license.
+
+==============================================================================
+1. GRANT OF LICENSE
+==============================================================================
+
+The Author grants you a LIMITED, NON-EXCLUSIVE, NON-TRANSFERABLE, REVOCABLE 
+license to VIEW this Software for personal reference and educational purposes 
+only, subject to the restrictions below.
+
+==============================================================================
+2. RESTRICTIONS
+==============================================================================
+
+You MAY NOT:
+
+a) Copy, clone, fork, or download this Software or any portion thereof
+b) Modify, adapt, translate, or create derivative works based on the Software
+c) Distribute, sublicense, lease, rent, loan, or transfer the Software
+d) Reverse engineer, decompile, or disassemble the Software
+e) Remove or alter any copyright, trademark, or proprietary notices
+f) Use the Software for any commercial purpose without written permission
+g) Use the Software in any manner that competes with the Author's business
+h) Publish, share, or redistribute the Software in any form
+i) Use the Software as a template or foundation for other projects
+j) Extract code snippets or components for use in other projects
+
+==============================================================================
+3. OWNERSHIP
+==============================================================================
+
+The Software is licensed, not sold. The Author retains all right, title, and 
+interest in and to the Software, including all copyrights, patents, trade 
+secrets, trademarks, and other intellectual property rights.
+
+==============================================================================
+4. NO WARRANTIES
+==============================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING 
+FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+DEALINGS IN THE SOFTWARE.
+
+==============================================================================
+5. THIRD-PARTY COMPONENTS
+==============================================================================
+
+This Software incorporates certain third-party open-source components, each 
+governed by their respective licenses:
+
+- React (MIT License)
+- Firebase (Apache License 2.0)
+- Tailwind CSS (MIT License)
+- Framer Motion (MIT License)
+- Lucide React (ISC License)
+- React Syntax Highlighter (MIT License)
+- Vite (MIT License)
+- Other dependencies as listed in package.json
+
+These third-party components remain subject to their original licenses. This 
+proprietary license applies only to the original code and implementation 
+created by the Author.
+
+==============================================================================
+6. COMMERCIAL USE
+==============================================================================
+
+Any commercial use of this Software requires explicit written permission from 
+the Author. This includes but is not limited to:
+
+- Using the Software in a commercial product or service
+- Offering the Software as a service (SaaS)
+- Selling or licensing the Software to third parties
+- Using the Software's code or design in commercial projects
+
+Contact mohavvvvd.2021@gmail.com for commercial licensing inquiries.
+
+==============================================================================
+7. TERMINATION
+==============================================================================
+
+This license is effective until terminated. Your rights under this license 
+will terminate automatically without notice if you fail to comply with any 
+term hereof. Upon termination, you must cease all use of the Software and 
+destroy all copies in your possession.
+
+==============================================================================
+8. ENFORCEMENT
+==============================================================================
+
+The Author reserves the right to take legal action against any person or 
+entity that violates the terms of this license. Violations may result in:
+
+- Immediate termination of viewing rights
+- Legal action seeking injunctive relief
+- Claims for monetary damages
+- Reporting to relevant platforms (GitHub, etc.)
+
+==============================================================================
+9. CONTACT FOR PERMISSIONS
+==============================================================================
+
+For permissions beyond the scope of this license, including:
+- Commercial use requests
+- Custom feature development
+- Enterprise licensing
+- Collaboration opportunities
+
+Please contact:
+
+Mohamed Ghoul
+Email: mohavvvvd.2021@gmail.com
+GitHub: @mohavvvvd
+Portfolio: mohavvvvd.netlify.app
+
+==============================================================================
+10. GOVERNING LAW
+==============================================================================
+
+This license shall be governed by and construed in accordance with the laws 
+of Tunisia, without regard to its conflict of law provisions.
+
+==============================================================================
+11. ENTIRE AGREEMENT
+==============================================================================
+
+This license constitutes the entire agreement between you and the Author 
+concerning the Software and supersedes all prior or contemporaneous 
+understandings regarding such subject matter.
+
+==============================================================================
+12. SEVERABILITY
+==============================================================================
+
+If any provision of this license is held to be unenforceable, such provision 
+shall be reformed only to the extent necessary to make it enforceable, and 
+the remainder of the license shall remain in full force and effect.
+
+==============================================================================
+13. ACKNOWLEDGMENT
+==============================================================================
+
+BY ACCESSING THIS REPOSITORY, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS 
+LICENSE, UNDERSTAND IT, AND AGREE TO BE BOUND BY ITS TERMS AND CONDITIONS.
+
+==============================================================================
+
+© 2026 Mohamed Ghoul Production
+All Rights Reserved.
+
+Unauthorized use, reproduction, or distribution is strictly prohibited and 
+may result in severe civil and criminal penalties.
+
+==============================================================================
