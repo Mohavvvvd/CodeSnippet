@@ -11,7 +11,7 @@
 
 Unlike other platforms that try to do everything, CodeSnippet is crafted specifically for developers who want a streamlined, efficient way to organize their code.
 
-[Live Demo](https://codesnippet.com) • [Report Issues](mailto:mohavvvvd.2021@gmail.com)
+[Live Demo]([https://mindvault.com](https://mindvault.mohavvvvd-2021.workers.dev/) • [Report Issues](mailto:mohavvvvd.2021@gmail.com)
 
 </div>
 
